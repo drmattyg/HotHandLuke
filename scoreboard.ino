@@ -11,6 +11,8 @@
 Adafruit_MCP23017 mcp;
 int rx_state = LOW;
 int rx_state_new;
+int currentMcpOutput = 0;
+
 void setup() {  
   mcp.begin();      // use default address 0
   for(int i = 0; i < 16; i++) {
@@ -35,5 +37,11 @@ void loop() {
     if(rx_state != rx_state_new) {
       rx_state = rx_state_new;
       flashLED();
+      if(rx_state) {
+        mcp.digitalWrite(currentMcpOutput, HIGH);
+      } else {
+        mcp.digitalWrite(currentMcpOutput, LOW);
+        currentMcpOutput += currentMcpOutput % 16;
+      }
     }
 }
