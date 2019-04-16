@@ -1,0 +1,19 @@
+16
+4
+6
+8
+10
+12
+14
+2
+1
+13
+11
+9
+7
+5
+3
+15
+
+IO inputs run starting from BROWN on the left to right
+RIGHT side of the MCP23017 is plugged into the TOP bank

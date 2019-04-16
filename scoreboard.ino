@@ -38,10 +38,12 @@ void loop() {
       rx_state = rx_state_new;
       flashLED();
       if(rx_state) {
-        mcp.digitalWrite(currentMcpOutput, HIGH);
-      } else {
         mcp.digitalWrite(currentMcpOutput, LOW);
-        currentMcpOutput += currentMcpOutput % 16;
+        mcp.digitalWrite((currentMcpOutput - 1) % 16, HIGH);
+      } else {
+        mcp.digitalWrite(currentMcpOutput, HIGH);
+        mcp.digitalWrite((currentMcpOutput + 1) % 16, LOW);
+        currentMcpOutput = (currentMcpOutput+ 1) % 16;
       }
     }
 }
