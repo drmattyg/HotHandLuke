@@ -44,11 +44,12 @@ void sevenSeg(int digitNum, int digitVal, int state) {
 }
 
 void setDigit(int digitNum, int digitVal) {
+  sevenSeg(digitNum, digitVal, LOW);
+
   // turn off previous digit
   if(currentDigitVal[digitNum] != -1) {
     sevenSeg(currentDigitVal[digitNum], HIGH);
   }
-  sevenSeg(digitNum, digitVal, LOW);
   currentDigitVal[digitNum] = digitVal;
 }
 
