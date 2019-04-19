@@ -14,15 +14,15 @@
 Adafruit_MCP23017 mcp;
 int rx_state = LOW;
 int rx_state_new;
-int rx_pin_prev[] = [-1, -1, -1, -1];
-int rx_pin_current[] = [-1, -1, -1, -1];
-const int RX_PINS[] = [RX0, RX1, RX2, RX3];
+int rx_pin_prev[] = {-1, -1, -1, -1};
+int rx_pin_current[] = {-1, -1, -1, -1};
+const int RX_PINS[] = {RX0, RX1, RX2, RX3};
 int currentMcpOutput = 0;
 
 // relays are numbered starting from 1, so RELAYS[0] is nothing
 // RELAYS[1] is the mcp pin for relay 1
 
-const int RELAYS[] PROGMEM = [100, 8, 7, 14, 1, 13, 2, 12, 3, 11, 4, 10, 5, 9, 6, 15, 0]
+const int RELAYS[] PROGMEM = {100, 8, 7, 14, 1, 13, 2, 12, 3, 11, 4, 10, 5, 9, 6, 15, 0};
 
 const char DIGIT0[] PROGMEM = {0, 1, 2, 3, 4, 6};
 const char DIGIT1[] PROGMEM = {5, 2};
@@ -34,13 +34,13 @@ const char DIGIT6[] PROGMEM = {6, 4, 3, 2, 1, 0};
 const char DIGIT7[] PROGMEM = {6, 5, 2};
 const char DIGIT8[] PROGMEM = {6, 5, 4, 3, 2, 1, 0};
 const char DIGIT9[] PROGMEM = {6, 5, 4, 3, 2, 0};
-const char* DIGITS[] PROGMEM = {DIGIT0, DIGIT1, DIGIT2, DIGIT3, DIGIT4, DIGIT5, DIGIT6, DIGIT7, DIGIT8, DIGIT9};
+const char* DIGITS[] = {DIGIT0, DIGIT1, DIGIT2, DIGIT3, DIGIT4, DIGIT5, DIGIT6, DIGIT7, DIGIT8, DIGIT9};
 
-int currentDigitVal0[] = {-1, -1};
+int currentDigitVal[] = {-1, -1};
 
 
 void sevenSeg(int digitNum, int digitVal, int state) {
-  for(int i = 0; i < sizeof(DIGITS[digitVal])) {
+  for(int i = 0; i < sizeof(DIGITS[digitVal]); i++) {
     int relayNum = DIGITS[digitVal] + 1 + (digitNum * 10);
     mcp.digitalWrite(RELAYS[relayNum], state);
   }
@@ -51,7 +51,7 @@ void setDigit(int digitNum, int digitVal) {
 
   // turn off previous digit
   if(currentDigitVal[digitNum] != -1) {
-    sevenSeg(currentDigitVal[digitNum], HIGH);
+    sevenSeg(digitNum, currentDigitVal[digitNum], HIGH);
   }
   currentDigitVal[digitNum] = digitVal;
 }
@@ -90,7 +90,7 @@ void flashLED() {
 }
 
 void loop() {
-  bool rx_changed[] = [false, false, false, false];  
+  bool rx_changed[] = {false, false, false, false};  
   for(int i = 0; i < 4; i++) {
       rx_pin_current[i] = digitalRead(RX_PINS[i]);
       if(rx_pin_current[i] != rx_pin_prev[i]) {
