@@ -14,6 +14,9 @@
 Adafruit_MCP23017 mcp;
 int rx_state = LOW;
 int rx_state_new;
+int rx_pin_prev[] = [-1, -1, -1, -1];
+int rx_pin_current[] = [-1, -1, -1, -1];
+const int RX_PINS[] = [RX0, RX1, RX2, RX3];
 int currentMcpOutput = 0;
 
 // relays are numbered starting from 1, so RELAYS[0] is nothing
@@ -87,17 +90,34 @@ void flashLED() {
 }
 
 void loop() {
-    rx_state_new = digitalRead(RX_ACTIVE);
-    if(rx_state != rx_state_new) {
-      rx_state = rx_state_new;
-      flashLED();
-      if(rx_state) {
-        mcp.digitalWrite(currentMcpOutput, LOW);
-        mcp.digitalWrite((currentMcpOutput - 1) % 16, HIGH);
-      } else {
-        mcp.digitalWrite(currentMcpOutput, HIGH);
-        mcp.digitalWrite((currentMcpOutput + 1) % 16, LOW);
-        currentMcpOutput = (currentMcpOutput+ 1) % 16;
+  bool rx_changed[] = [false, false, false, false];  
+  for(int i = 0; i < 4; i++) {
+      rx_pin_current[i] = digitalRead(RX_PINS[i]);
+      if(rx_pin_current[i] != rx_pin_prev[i]) {
+        rx_changed[i] = true;
       }
+      rx_pin_prev[i] = rx_pin_current[i];
+  }
+  if(rx_changed[RX0]) {
+    // RX0 = increment
+    incrementSevenSeg();
+  } else if(rx_changed[RX1]) {
+    // RX1 = set to zero
+    setDigit(0, 0);
+    setDigit(1, 0);
+  }
+
+  rx_state_new = digitalRead(RX_ACTIVE);
+  if(rx_state != rx_state_new) {
+    rx_state = rx_state_new;
+    flashLED();
+    if(rx_state) {
+      mcp.digitalWrite(currentMcpOutput, LOW);
+      mcp.digitalWrite((currentMcpOutput - 1) % 16, HIGH);
+    } else {
+      mcp.digitalWrite(currentMcpOutput, HIGH);
+      mcp.digitalWrite((currentMcpOutput + 1) % 16, LOW);
+      currentMcpOutput = (currentMcpOutput+ 1) % 16;
     }
+  }
 }
