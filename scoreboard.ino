@@ -52,6 +52,19 @@ void setDigit(int digitNum, int digitVal) {
   currentDigitVal[digitNum] = digitVal;
 }
 
+void incrementSevenSeg() {
+  // low order digit is 1, on the right
+  if(currentDigitVal[1] == 9) {
+    currentDigitVal[1] = 0;
+    currentDigitVal[0]++;
+    setDigit(1, 0);
+    setDigit(0, currentDigitVal[0]);
+  } else {
+    currentDigitVal[1]++;
+    setDigit(1, currentDigitVal[1]);
+  }
+}
+
 
 void setup() {  
   mcp.begin();      // use default address 0
