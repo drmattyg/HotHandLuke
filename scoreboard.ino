@@ -107,17 +107,8 @@ void loop() {
     setDigit(1, 0);
   }
 
-  rx_state_new = digitalRead(RX_ACTIVE);
   if(rx_state != rx_state_new) {
     rx_state = rx_state_new;
     flashLED();
-    if(rx_state) {
-      mcp.digitalWrite(currentMcpOutput, LOW);
-      mcp.digitalWrite((currentMcpOutput - 1) % 16, HIGH);
-    } else {
-      mcp.digitalWrite(currentMcpOutput, HIGH);
-      mcp.digitalWrite((currentMcpOutput + 1) % 16, LOW);
-      currentMcpOutput = (currentMcpOutput+ 1) % 16;
-    }
   }
 }
