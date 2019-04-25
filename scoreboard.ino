@@ -14,8 +14,8 @@
 Adafruit_MCP23017 mcp;
 int rx_state = LOW;
 int rx_state_new;
-int rx_pin_prev[] = {-1, -1, -1, -1};
-int rx_pin_current[] = {-1, -1, -1, -1};
+int rx_pin_prev[] = {LOW, LOW, LOW, LOW};
+int rx_pin_current[] = {LOW, LOW, LOW, LOW};
 const int RX_PINS[] = {RX0, RX1, RX2, RX3};
 int currentMcpOutput = 0;
 
@@ -81,6 +81,7 @@ void setup() {
   for(int i = 0; i < 5; i++) {
     pinMode(i, INPUT); // RC RX pins
   }
+  Serial.begin(9600);
 }
 
 void flashLED() {
@@ -90,24 +91,27 @@ void flashLED() {
 }
 
 void loop() {
-  bool rx_changed[] = {false, false, false, false};  
+  bool rx_changed[] = {false, false, false, false};
+  rx_state = digitalRead(RX_ACTIVE);
   for(int i = 0; i < 4; i++) {
       rx_pin_current[i] = digitalRead(RX_PINS[i]);
       if(rx_pin_current[i] != rx_pin_prev[i]) {
         rx_changed[i] = true;
-      }
-      rx_pin_prev[i] = rx_pin_current[i];
+        rx_pin_prev[i] = rx_pin_current[i];      }
+
   }
-  if(rx_changed[RX0]) {
+  if(rx_changed[RX0] && rx_pin_current[RX0]) {
     // RX0 = increment
     incrementSevenSeg();
-  } else if(rx_changed[RX1]) {
+    Serial.println(currentDigitVal[0]);
+    Serial.println(currentDigitVal[1]);
+  } else if(rx_changed[RX1] && rx_pin_current[RX1]) {
     // RX1 = set to zero
     setDigit(0, 0);
     setDigit(1, 0);
   }
 
-  if(rx_state != rx_state_new) {
+  if(rx_state != rx_state_new && rx_state) {
     rx_state = rx_state_new;
     flashLED();
   }
