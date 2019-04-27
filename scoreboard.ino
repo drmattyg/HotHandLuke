@@ -1,12 +1,12 @@
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
 #define LED 13
-#define FLASH_TIME 250 // ms
-#define RX_ACTIVE 4
-#define RX0 0
-#define RX1 1
-#define RX2 2
-#define RX3 3
+#define FLASH_TIME 50 // ms
+#define RX_ACTIVE 12
+#define RX0 8
+#define RX1 9
+#define RX2 10
+#define RX3 11
 
 
 
@@ -78,16 +78,19 @@ void setup() {
   }
   pinMode(LED, OUTPUT); // on board LED monitors the remote RX
   digitalWrite(LED, LOW);
-  for(int i = 0; i < 5; i++) {
+  for(int i = 8; i <= 12; i++) {
     pinMode(i, INPUT); // RC RX pins
   }
   Serial.begin(9600);
 }
 
-void flashLED() {
-  digitalWrite(LED, HIGH);
-  delay(FLASH_TIME);
-  digitalWrite(LED, LOW);
+void flashLED(int n) {
+  for(int i = 0; i < n; i++) {
+    digitalWrite(LED, HIGH);
+    delay(FLASH_TIME);
+    digitalWrite(LED, LOW);
+    delay(FLASH_TIME);
+  }
 }
 
 void loop() {
@@ -97,7 +100,9 @@ void loop() {
       rx_pin_current[i] = digitalRead(RX_PINS[i]);
       if(rx_pin_current[i] != rx_pin_prev[i]) {
         rx_changed[i] = true;
-        rx_pin_prev[i] = rx_pin_current[i];      }
+        rx_pin_prev[i] = rx_pin_current[i];
+        flashLED(i);
+      }
 
   }
   if(rx_changed[RX0] && rx_pin_current[RX0]) {
@@ -113,6 +118,6 @@ void loop() {
 
   if(rx_state != rx_state_new && rx_state) {
     rx_state = rx_state_new;
-    flashLED();
+    //flashLED();
   }
 }
