@@ -81,7 +81,7 @@ void setup() {
   for(int i = 8; i <= 12; i++) {
     pinMode(i, INPUT); // RC RX pins
   }
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void flashLED(int n) {
@@ -94,6 +94,53 @@ void flashLED(int n) {
 }
 
 void loop() {
+
+  int buttA = digitalRead(RX0);
+  int buttB = digitalRead(RX1);
+  int buttC = digitalRead(RX2);
+  int buttD = digitalRead(RX3);
+
+  //increment by 1
+  if(buttA == 1){
+    flashLED(1);
+    incrementSevenSeg();
+    delay(500);
+    Serial.println(currentDigitVal[0]);
+    Serial.println(currentDigitVal[1]);
+  }
+  //increment by 3
+  if(buttB == 1){
+    flashLED(1);
+    incrementSevenSeg();
+    incrementSevenSeg();
+    incrementSevenSeg();
+    delay(500);
+    Serial.println(currentDigitVal[0]);
+    Serial.println(currentDigitVal[1]);
+  }
+  //increment by 5
+  if(buttC == 1){
+    flashLED(1);
+    incrementSevenSeg();
+    incrementSevenSeg();
+    incrementSevenSeg();
+    incrementSevenSeg();
+    incrementSevenSeg();
+    delay(500);
+    Serial.println(currentDigitVal[0]);
+    Serial.println(currentDigitVal[1]);
+      
+  }
+  //reset
+  if(buttD == 1){
+    flashLED(2);
+    setDigit(0,0);
+    setDigit(1,0);
+    delay(500);
+    Serial.println(currentDigitVal[0]);
+    Serial.println(currentDigitVal[1]);
+  }
+ /* 
   bool rx_changed[] = {false, false, false, false};
   rx_state = digitalRead(RX_ACTIVE);
   for(int i = 0; i < 4; i++) {
@@ -103,7 +150,6 @@ void loop() {
         rx_pin_prev[i] = rx_pin_current[i];
         flashLED(i);
       }
-
   }
   if(rx_changed[RX0] && rx_pin_current[RX0]) {
     // RX0 = increment
@@ -120,4 +166,6 @@ void loop() {
     rx_state = rx_state_new;
     //flashLED();
   }
-}
+*/ 
+
+} //end loop
