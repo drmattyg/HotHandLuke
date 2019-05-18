@@ -9,8 +9,6 @@
 #define RX3 11
 
 
-
-
 Adafruit_MCP23017 mcp;
 int rx_state = LOW;
 int rx_state_new;
