@@ -94,7 +94,7 @@ void flashLED(int n) {
 }
 
 void loop() {
-
+  // read input as int to debounce
   int buttA = digitalRead(RX0);
   int buttB = digitalRead(RX1);
   int buttC = digitalRead(RX2);
@@ -104,7 +104,7 @@ void loop() {
   if(buttA == 1){
     flashLED(1);
     incrementSevenSeg();
-    delay(500);
+    delay(500); //for debounce
     Serial.println(currentDigitVal[0]);
     Serial.println(currentDigitVal[1]);
   }
@@ -114,7 +114,7 @@ void loop() {
     incrementSevenSeg();
     incrementSevenSeg();
     incrementSevenSeg();
-    delay(500);
+    delay(500); //for debounce
     Serial.println(currentDigitVal[0]);
     Serial.println(currentDigitVal[1]);
   }
@@ -126,7 +126,7 @@ void loop() {
     incrementSevenSeg();
     incrementSevenSeg();
     incrementSevenSeg();
-    delay(500);
+    delay(500); //for debounce
     Serial.println(currentDigitVal[0]);
     Serial.println(currentDigitVal[1]);
       
@@ -136,36 +136,9 @@ void loop() {
     flashLED(2);
     setDigit(0,0);
     setDigit(1,0);
-    delay(500);
+    delay(500); //for debounce
     Serial.println(currentDigitVal[0]);
     Serial.println(currentDigitVal[1]);
   }
- /* 
-  bool rx_changed[] = {false, false, false, false};
-  rx_state = digitalRead(RX_ACTIVE);
-  for(int i = 0; i < 4; i++) {
-      rx_pin_current[i] = digitalRead(RX_PINS[i]);
-      if(rx_pin_current[i] != rx_pin_prev[i]) {
-        rx_changed[i] = true;
-        rx_pin_prev[i] = rx_pin_current[i];
-        flashLED(i);
-      }
-  }
-  if(rx_changed[RX0] && rx_pin_current[RX0]) {
-    // RX0 = increment
-    incrementSevenSeg();
-    Serial.println(currentDigitVal[0]);
-    Serial.println(currentDigitVal[1]);
-  } else if(rx_changed[RX1] && rx_pin_current[RX1]) {
-    // RX1 = set to zero
-    setDigit(0, 0);
-    setDigit(1, 0);
-  }
-
-  if(rx_state != rx_state_new && rx_state) {
-    rx_state = rx_state_new;
-    //flashLED();
-  }
-*/ 
 
 } //end loop
