@@ -46,7 +46,7 @@ void sevenSeg(int digitNum, int digitVal, int state) {
   Serial.println(sizeof(DIGITS[digitVal]));
   char* digit_to_write = DIGITS[digitVal];
   for(int i = 0; i < DIGIT_LEN[digitVal]; i++) {
-    int relayNum = digit_to_write[i] + 1 + (digitNum * 10);
+    int relayNum = digit_to_write[i] + 1 + (digitNum * 7);
     sprintf(buff, "digitVal %d, relayNum %d", digitVal, relayNum);
     Serial.println(buff);
     mcp.digitalWrite(RELAYS[relayNum], state);
