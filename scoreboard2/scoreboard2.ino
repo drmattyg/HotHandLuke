@@ -24,7 +24,7 @@ int currentMcpOutput = 0;
 
 const int RELAYS[] = {100, 8, 7, 14, 1, 13, 2, 12, 3, 11, 4, 10, 5, 9, 6, 15, 0};
 
-const char DIGIT0[] = {0, 1, 2, 3, 4, 6};
+const char DIGIT0[] = {0, 1, 2, 4, 5, 6};
 const char DIGIT1[] = {5, 2};
 const char DIGIT2[] = {6, 5, 3, 1, 0};
 const char DIGIT3[] = {6, 5, 3, 2, 0};
@@ -41,28 +41,26 @@ int currentDigitVal[] = {-1, -1};
 
 void sevenSeg(int digitNum, int digitVal, int state) {
   char buff[50];
-  sprintf(buff, "digitNum %d, digitVal %d, state %d", digitNum, digitVal, state);
+  sprintf(buff, "digitNum %d, digitVal %d, state %d, digit len %d", digitNum, digitVal, state, DIGIT_LEN[digitVal]);
   Serial.println(buff);
-  Serial.println(sizeof(DIGITS[digitVal]));
   char* digit_to_write = DIGITS[digitVal];
   for(int i = 0; i < DIGIT_LEN[digitVal]; i++) {
-    int relayNum = digit_to_write[i] + 1 + (digitNum * 7);
-    sprintf(buff, "digitVal %d, relayNum %d", digitVal, relayNum);
+    int relayNum = digit_to_write[i] + 1 + (digitNum * 8);
+    sprintf(buff, "digitVal %d, relayNum %d", digitVal, RELAYS[relayNum]);
     Serial.println(buff);
     mcp.digitalWrite(RELAYS[relayNum], state);
   }
 }
 
 void clearAll() {
-  for(int i = 1; i < sizeof(RELAYS); i++) {
-    mcp.digitalWrite(RELAYS[i], i);
+  for(int i = 1; i < 17; i++) {
+    mcp.digitalWrite(RELAYS[i], HIGH);
   }
 }
 
 void setDigit(int digitNum, int digitVal) {
 
   // turn off previous digit
-  clearAll();
   sevenSeg(digitNum, digitVal, LOW);
 
   currentDigitVal[digitNum] = digitVal;
@@ -107,16 +105,17 @@ void flashLED(int n) {
     delay(FLASH_TIME);
   }
 }
-int i = 1;
+int j = 0;
+
 void loop() {
   // read input as int to debounce
-  int buttA = digitalRead(RX0);
-  int buttB = digitalRead(RX1);
-  int buttC = digitalRead(RX2);
-  int buttD = digitalRead(RX3);
+  int buttD = digitalRead(RX0);
+  int buttC = digitalRead(RX1);
+  int buttB = digitalRead(RX2);
+  int buttA = digitalRead(RX3);
 
   //increment by 1
-  if(buttD == 1){
+  if(buttB == 1){
     flashLED(1);
     incrementSevenSeg();
     delay(500); //for debounce
@@ -126,15 +125,18 @@ void loop() {
   //increment by 3
   if(buttC == 1){
     flashLED(1);
-    incrementSevenSeg();
-    incrementSevenSeg();
-    incrementSevenSeg();
+    setDigit(1, 0);
+    setDigit(0, 0);
+    // incrementSevenSeg();
+    // incrementSevenSeg();
+    // incrementSevenSeg();
+
     delay(500); //for debounce
     //Serial.println(currentDigitVal[0]);
     //Serial.println(currentDigitVal[1]);
   }
   //increment by 5
-  if(buttB == 1){
+  if(buttD == 1){
     flashLED(1);
     incrementSevenSeg();
     incrementSevenSeg();
