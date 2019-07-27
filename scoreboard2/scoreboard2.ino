@@ -58,6 +58,17 @@ void clearAll() {
   }
 }
 
+void clearDigit(int digit) {
+  int relayOffset;
+  if(digit == LOW) {
+    relayOffset = 9;
+  } else {
+    relayOffset = 1;
+  }
+  for(int i = 0; i < 8; i++) {
+    mcp.digitalWrite(RELAYS[relayOffset + i], HIGH);
+  }
+}
 void setDigit(int digitNum, int digitVal) {
 
   // turn off previous digit
@@ -71,12 +82,13 @@ void incrementSevenSeg() {
   if(currentDigitVal[1] == 9) {
     currentDigitVal[1] = 0;
     currentDigitVal[0]++;
-    setDigit(1, 0);
-    setDigit(0, currentDigitVal[0]);
+    clearDigit(HIGH);
   } else {
     currentDigitVal[1]++;
-    setDigit(1, currentDigitVal[1]);
   }
+  clearDigit(LOW);
+  setDigit(1, currentDigitVal[1]);
+  setDigit(0, currentDigitVal[0]);
 }
 
 
@@ -124,29 +136,11 @@ void loop() {
   }
   //increment by 3
   if(buttC == 1){
-    flashLED(1);
-    setDigit(1, 0);
-    setDigit(0, 0);
-    // incrementSevenSeg();
-    // incrementSevenSeg();
-    // incrementSevenSeg();
-
     delay(500); //for debounce
-    //Serial.println(currentDigitVal[0]);
-    //Serial.println(currentDigitVal[1]);
   }
   //increment by 5
   if(buttD == 1){
-    flashLED(1);
-    incrementSevenSeg();
-    incrementSevenSeg();
-    incrementSevenSeg();
-    incrementSevenSeg();
-    incrementSevenSeg();
     delay(500); //for debounce
-    //Serial.println(currentDigitVal[0]);
-    //Serial.println(currentDigitVal[1]);
-      
   }
   //reset
   if(buttA == 1){
