@@ -7,7 +7,7 @@
 #define RX1 9
 #define RX2 10
 #define RX3 11
-
+#define CYCLE_OFF -1
 
 
 
@@ -37,7 +37,7 @@ const char DIGIT9[] = {6, 5, 4, 3, 2, 0};
 const char* DIGITS[] = {DIGIT0, DIGIT1, DIGIT2, DIGIT3, DIGIT4, DIGIT5, DIGIT6, DIGIT7, DIGIT8, DIGIT9};
 const char* DIGIT_LEN[] = {6, 2, 5, 5, 4, 5, 6, 3, 7, 6};
 int currentDigitVal[] = {-1, -1};
-
+int cycleState = CYCLE_OFF;
 
 void sevenSeg(int digitNum, int digitVal, int state) {
   char buff[50];
@@ -105,7 +105,7 @@ void setup() {
   }
   Serial.begin(9600);
   clearAll();
-  setDigit(1, 0);
+  setDigit(0, 0);
   setDigit(0, 0);
 }
 
@@ -119,12 +119,50 @@ void flashLED(int n) {
 }
 int j = 0;
 
+void cycleNext() {
+  int cCurrent1 = cycleState;
+  int cNext1 = ((cycleState + 1) % 7) + 1; 
+  int cPrev1 = ((cycleState - 1) % 7) + 1;
+  int cCurrent2 = cCurrent1 + 8;
+  int cNext2 = cNext1 + 8;
+  int cPrev2 = cNext2 + 8;
+  mcp.digitalWrite(RELAYS[cCurrent1], LOW);
+  mcp.digitalWrite(RELAYS[cCurrent2], LOW);
+  mcp.digitalWrite(RELAYS[cNext1], LOW);
+  mcp.digitalWrite(RELAYS[cNext2], LOW);
+  mcp.digitalWrite(RELAYS[cPrev1], HIGH);
+  mcp.digitalWrite(RELAYS[cPrev2], HIGH);
+  cycleState = (cycleState + 1) % 8;
+
+
+}
+
 void loop() {
   // read input as int to debounce
   int buttD = digitalRead(RX0);
   int buttC = digitalRead(RX1);
   int buttB = digitalRead(RX2);
   int buttA = digitalRead(RX3);
+  //reset
+  if(buttA == 1){
+    cycleState = CYCLE_OFF;
+    flashLED(2);
+    clearAll();
+    setDigit(0,0);
+    setDigit(0,0);
+    delay(500); //for debounce
+    //Serial.println(currentDigitVal[0]);
+    //Serial.println(currentDigitVal[1]);
+  }
+  // turn on cycling display
+  if(buttC == 1){
+    cycleState = 0;
+    delay(500); //for debounce
+  }
+
+  if(cycleState != CYCLE_OFF) {
+    cycleNext();
+  }
 
   //increment by 1
   if(buttB == 1){
@@ -134,22 +172,10 @@ void loop() {
     //Serial.println(currentDigitVal[0]);
     //Serial.println(currentDigitVal[1]);
   }
-  //increment by 3
-  if(buttC == 1){
-    delay(500); //for debounce
-  }
+
   //increment by 5
   if(buttD == 1){
     delay(500); //for debounce
   }
-  //reset
-  if(buttA == 1){
-    flashLED(2);
-    setDigit(0,0);
-    setDigit(1,0);
-    delay(500); //for debounce
-    //Serial.println(currentDigitVal[0]);
-    //Serial.println(currentDigitVal[1]);
-  }
- 
+
 } //end loop
