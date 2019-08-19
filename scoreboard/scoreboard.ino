@@ -8,7 +8,7 @@
 #define RX2 10
 #define RX3 11
 #define CYCLE_OFF -1
-
+#define MAX_TIMER 1000
 
 
 Adafruit_MCP23017 mcp;
@@ -38,6 +38,8 @@ const char* DIGITS[] = {DIGIT0, DIGIT1, DIGIT2, DIGIT3, DIGIT4, DIGIT5, DIGIT6, 
 const char* DIGIT_LEN[] = {6, 2, 5, 5, 4, 5, 6, 3, 7, 6};
 int currentDigitVal[] = {-1, -1};
 int cycleState = CYCLE_OFF;
+int cycleTimer = 0;
+
 
 void sevenSeg(int digitNum, int digitVal, int state) {
   char buff[50];
@@ -106,7 +108,7 @@ void setup() {
   Serial.begin(9600);
   clearAll();
   setDigit(0, 0);
-  setDigit(0, 0);
+  setDigit(1, 0);
 }
 
 void flashLED(int n) {
@@ -120,12 +122,12 @@ void flashLED(int n) {
 int j = 0;
 
 void cycleNext() {
-  int cCurrent1 = cycleState;
+  int cCurrent1 = cycleState + 1;
   int cNext1 = ((cycleState + 1) % 7) + 1; 
   int cPrev1 = ((cycleState - 1) % 7) + 1;
   int cCurrent2 = cCurrent1 + 8;
   int cNext2 = cNext1 + 8;
-  int cPrev2 = cNext2 + 8;
+  int cPrev2 = cPrev1 + 8;
   mcp.digitalWrite(RELAYS[cCurrent1], LOW);
   mcp.digitalWrite(RELAYS[cCurrent2], LOW);
   mcp.digitalWrite(RELAYS[cNext1], LOW);
@@ -149,7 +151,7 @@ void loop() {
     flashLED(2);
     clearAll();
     setDigit(0,0);
-    setDigit(0,0);
+    setDigit(1,0);
     delay(500); //for debounce
     //Serial.println(currentDigitVal[0]);
     //Serial.println(currentDigitVal[1]);
@@ -157,15 +159,24 @@ void loop() {
   // turn on cycling display
   if(buttC == 1){
     cycleState = 0;
+    clearAll();
+    cycleTimer = millis();
     delay(500); //for debounce
   }
 
   if(cycleState != CYCLE_OFF) {
-    cycleNext();
+    if((millis() - cycleTimer) > MAX_TIMER) {
+      cycleTimer = millis();
+      cycleNext();
+    }
+    
   }
 
   //increment by 1
   if(buttB == 1){
+    if(cycleState != CYCLE_OFF) {
+      cycleState = CYCLE_OFF;
+    }
     flashLED(1);
     incrementSevenSeg();
     delay(500); //for debounce
